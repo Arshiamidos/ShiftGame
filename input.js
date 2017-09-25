@@ -5,6 +5,7 @@ var move=Vector3(0,0,0);
 var player_bw='w';
 var gravity=-0.98f;
 var isgrounded : boolean = false;
+var ingaurd : boolean = false;
 var shifting=false;
 var shiftingcamera=0.0;
 var gravityhitted=false;
@@ -26,58 +27,33 @@ function OnTriggerEnter2D (col:Collider2D)
 			//Camera.main.transform.rotation=Quaternion.Euler(0,0,col.transform.rotation.eulerAngles.z);
 			gravityhittedvalue=col.transform.rotation.eulerAngles.z;
 		    gravityhitted=true;
-		    
-		    						
-		    if(player_bw=='w')			
-		     switch (Mathf.RoundToInt(col.transform.rotation.eulerAngles.z)){
+		    switch (Mathf.RoundToInt(col.transform.rotation.eulerAngles.z)){
 						 case 0:
 							Physics2D.gravity = new Vector2(0f,player_bw=='w'? -9.81f:9.81f);
-							GENERAL_GRAVITY='D';
+							GENERAL_GRAVITY=(player_bw=='w'?'D':'U');
 						 break;
 						 case 90:
 						 	Physics2D.gravity = new Vector2(player_bw=='w'?9.81f:-9.81f,0f);
-						 	GENERAL_GRAVITY='R';
+						 	GENERAL_GRAVITY=(player_bw=='w'?'R':'L');
 						 break;
 						 case 180:
 						 	Physics2D.gravity = new Vector2(0f,player_bw=='w'?9.81f:-9.81f);
-						 	GENERAL_GRAVITY='U';
+						 	GENERAL_GRAVITY=(player_bw=='w'?'U':'D');
 						 break;
 						 case 270:
 						 	Physics2D.gravity = new Vector2(player_bw=='w'?-9.81f:9.81f,0f);
-						 	GENERAL_GRAVITY='L';
+						 	GENERAL_GRAVITY=(player_bw=='w'?'L':'R');
 						 break;
 						
 						 }
-			else
-				switch (Mathf.RoundToInt(col.transform.rotation.eulerAngles.z)){
-						 case 0:
-							Physics2D.gravity = new Vector2(0f,player_bw=='w'? -9.81f:9.81f);
-							GENERAL_GRAVITY='U';
-						 break;
-						 case 90:
-						 	Physics2D.gravity = new Vector2(player_bw=='w'?9.81f:-9.81f,0f);
-						 	GENERAL_GRAVITY='L';
-						 break;
-						 case 180:
-						 	Physics2D.gravity = new Vector2(0f,player_bw=='w'?9.81f:-9.81f);
-						 	GENERAL_GRAVITY='D';
-						 break;
-						 case 270:
-						 	Physics2D.gravity = new Vector2(player_bw=='w'?-9.81f:9.81f,0f);
-						 	GENERAL_GRAVITY='R';
-						 break;
-						
-						 }
-			if(player_bw=='w')				 
-				transform.rotation.eulerAngles.z=Mathf.RoundToInt(col.transform.rotation.eulerAngles.z);
-			else
-				transform.rotation.eulerAngles.z=Mathf.RoundToInt(180+col.transform.rotation.eulerAngles.z);	
+				transform.rotation.eulerAngles.z=Mathf.RoundToInt(   (player_bw=='w'?0:180)+	col.transform.rotation.eulerAngles.z);
+	
 		}
 		else if(col.gameObject.tag=="die")
 		{
 			Instantiate(DIE_PREFAB, Vector3(gameObject.transform.position.x,gameObject.transform.position.y,-2), Quaternion.identity);
-			
-			Debug.Log("Game Over");
+			GetComponent.<SpriteRenderer>().enabled=false;
+			GetComponent.<BoxCollider2D>().enabled=false;
 		}
 		
 }
@@ -85,16 +61,25 @@ function OnCollisionEnter2D (col:Collision2D)
 {
 	if(col.gameObject.tag=="ground")
 		isgrounded=true;
+	if(col.gameObject.tag=="gaurd"  )
+		ingaurd=true;
 		
 }
 function OnCollisionStay2D(col:Collision2D){
+	
 	if(col.gameObject.tag=="ground")
 		isgrounded=true;
+	if(col.gameObject.tag=="gaurd" )
+	{
+			ingaurd=true;
+	}
 }
 function OnCollisionExit2D (col:Collision2D)
 {
 		if(col.gameObject.tag=="ground")
 			isgrounded=false;
+		if(col.gameObject.tag=="gaurd")
+			ingaurd=false;
 		
 }
 function getinput()
@@ -102,101 +87,53 @@ function getinput()
 	if(Input.GetKeyDown('s'))
 	{
 					
-		if(isgrounded)
-		{
-		
-		
-			if(player_bw=='w')
-			{
-				
-				
+		if(isgrounded && !ingaurd)
+		{	
+			
 				if(GENERAL_GRAVITY=='R')
 				{
 					shiftingcamera=90;
-					transform.position.x+=50;
+					transform.position.x+=(player_bw=='w'?50:-50);
 					
 				}
 				else if(GENERAL_GRAVITY=='D')
 				{
 					shiftingcamera=0;
-					transform.position.y-=50;
+					transform.position.y+=(player_bw=='w'?-50:50);
 				}
 				else if(GENERAL_GRAVITY=='L')
 				{
-					shiftingcamera=-90;
-					transform.position.x-=50;
+					shiftingcamera=270;
+					transform.position.x+=(player_bw=='w'?-50:50);
 				}
 				else if(GENERAL_GRAVITY=='U')
 				{
-					shiftingcamera=-180;
-					transform.position.y+=50;
-
-				}
-				
-				transform.localScale.y*=-1;
-				GetComponent.<Rigidbody2D>().gravityScale*= -1;	
-				
-				Debug.Log(GENERAL_GRAVITY);
-				player_bw='b';
-				GetComponent.<SpriteRenderer>().color=Color.black;
-				//Camera.main.transform.rotation = Quaternion.Euler(0,0,-180);
-				//Camera.main.orthographicSize *= -1;
- 
-			}
-			else
-			{
-				if(GENERAL_GRAVITY=='R')
-				{
-					shiftingcamera=90;
-					transform.position.x-=50;
-					
-				}
-				else if(GENERAL_GRAVITY=='D')
-				{
-					shiftingcamera=0;
-					transform.position.y+=50;
-				}
-				else if(GENERAL_GRAVITY=='L')
-				{
-					shiftingcamera=-90;
-					transform.position.x+=50;
-				}
-				else if(GENERAL_GRAVITY=='U')
-				{
-					shiftingcamera=-180;
-					transform.position.y-=50;
+					shiftingcamera=180;
+					transform.position.y+=(player_bw=='w'?50:-50);
 
 				}
 			
 			
 				transform.localScale.y*=-1;
-				player_bw='w';
 				GetComponent.<Rigidbody2D>().gravityScale*= -1;
-				GetComponent.<SpriteRenderer>().color=Color.white;
-				//Camera.main.transform.rotation = Quaternion.Euler(0,0,0);
- 				//Camera.main.orthographicSize *= -1;
-			}
-			
-			shifting=true;
+				GetComponent.<SpriteRenderer>().color=(player_bw=='w'?Color.black:Color.white);
+				player_bw=(player_bw=='w'?'b':'w');
+				shifting=true;
 		}
 	}
-	if(Input.GetKey('w'))
+	if(Input.GetKeyDown('w') && (isgrounded || ingaurd )  )
 	{
-		if( GENERAL_GRAVITY=='D')
-			transform.position += Vector3(0, player_bw=='w'?2:-2, 0) * speed * Time.deltaTime;
-		else if( GENERAL_GRAVITY=='R')
-			transform.position += Vector3( player_bw=='w'?-2:2,0, 0) * speed * Time.deltaTime;
-		else if( GENERAL_GRAVITY=='U')
-			transform.position += Vector3( 0,player_bw=='w'?-2:2, 0) * speed * Time.deltaTime;	
-		else if( GENERAL_GRAVITY=='L')
-			transform.position += Vector3( player_bw=='w'?2:-2,0, 0) * speed * Time.deltaTime;	
+		//if(isgrounded)
+		{
+			GetComponent.<Rigidbody2D>().AddForce((player_bw=='w'?2:-2)*transform.up * 30000);		
+				
+			if(Random.Range(0.0,1.0)>0.5)
+				animator.SetInteger("state",2);
+			else
+				animator.SetInteger("state",3);	
+		
+		}
 			
-			
-			
-		if(Random.Range(0.0,1.0)>0.5)
-			animator.SetInteger("state",2);
-		else
-			animator.SetInteger("state",3);		
 	}
 	 if(Input.GetKey('a'))
 	{
@@ -249,35 +186,34 @@ function Update ()
 	}
 	if(shifting)
 	{
+			Debug.LogError(Camera.main.transform.rotation.eulerAngles+":"+ (shiftingcamera+180)%360  );
 			if(player_bw=='b')
-				if( GENERAL_GRAVITY=='D')
-					Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, new Quaternion.Euler(0,0,shiftingcamera+181)  , 10 * Time.deltaTime);
-				else if( GENERAL_GRAVITY=='L')
-					Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, new Quaternion.Euler(0,0,shiftingcamera+90)  , 10 * Time.deltaTime);
-				else if( GENERAL_GRAVITY=='U')
-					Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, new Quaternion.Euler(0,0,shiftingcamera)  , 10 * Time.deltaTime);
-			else if(player_bw=='w')
+					Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, new Quaternion.Euler(0,0,shiftingcamera+180)  , 10 * Time.deltaTime);	
+			if(player_bw=='w')
 					Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, new Quaternion.Euler(0,0,shiftingcamera)  , 10 * Time.deltaTime);
 					
 			if(player_bw=='b')
-			if( Mathf.Abs(Camera.main.transform.rotation.eulerAngles.z)-shiftingcamera+180>=2)
+			if( Mathf.Abs( Mathf.Abs(Camera.main.transform.rotation.eulerAngles.z)-Mathf.Abs(   ( shiftingcamera+180)%360 ) ) <=0.2)
 					{
 						shifting=false;
-						Camera.main.transform.rotation=new Quaternion.Euler(0,0,shiftingcamera+180);
+						Camera.main.transform.rotation=new Quaternion.Euler(0,0,    ( shiftingcamera+180)%360   );
 					}
+			
+				
+					
 			if(player_bw=='w')
-			if( Mathf.Abs(Camera.main.transform.rotation.eulerAngles.z)-shiftingcamera>=2)
+			if( Mathf.Abs(  Mathf.Abs(Camera.main.transform.rotation.eulerAngles.z)-Mathf.Abs(shiftingcamera))<=0.2)
 					{
 						shifting=false;
 						Camera.main.transform.rotation=new Quaternion.Euler(0,0,shiftingcamera);
 					}
-			Debug.Log(GENERAL_GRAVITY+":"+shiftingcamera+":"+Camera.main.transform.rotation.eulerAngles.z)	;			
+			
 	}
 	else
 	{
 		getinput();
 	}
-	
+
 
 
 
