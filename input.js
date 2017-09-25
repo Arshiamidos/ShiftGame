@@ -68,11 +68,9 @@ function OnCollisionEnter2D (col:Collision2D)
 function OnCollisionStay2D(col:Collision2D){
 	
 	if(col.gameObject.tag=="ground")
-		isgrounded=true;
+		isgrounded=!(Mathf.RoundToInt(Vector3.Angle(col.gameObject.transform.right,gameObject.transform.right))==90);
 	if(col.gameObject.tag=="gaurd" )
-	{
-			ingaurd=true;
-	}
+		ingaurd=!(Mathf.RoundToInt(Vector3.Angle(col.gameObject.transform.right,gameObject.transform.right))==90);
 }
 function OnCollisionExit2D (col:Collision2D)
 {
@@ -186,7 +184,6 @@ function Update ()
 	}
 	if(shifting)
 	{
-			Debug.LogError(Camera.main.transform.rotation.eulerAngles+":"+ (shiftingcamera+180)%360  );
 			if(player_bw=='b')
 					Camera.main.transform.rotation = Quaternion.Lerp(Camera.main.transform.rotation, new Quaternion.Euler(0,0,shiftingcamera+180)  , 10 * Time.deltaTime);	
 			if(player_bw=='w')
