@@ -1,0 +1,16 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\assets\input.js">
+    <Files>
+      <File FileName="Assets\assets\input.js" Line="47" Column="31" />
+      <File FileName="Assets\uibutton.js" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="C:\Users\ArashMidos\Documents\_shift_\Assets\assets\input.js" line="133" />
+      <Breakpoint file="C:\Users\ArashMidos\Documents\_shift_\Assets\assets\input.js" line="128" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
